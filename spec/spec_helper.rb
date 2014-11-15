@@ -10,7 +10,6 @@
 # separate helper file that requires this one and then use it only in the specs
 # that actually need it.
 #
-require 'pry'
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
