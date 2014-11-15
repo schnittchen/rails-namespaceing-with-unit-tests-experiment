@@ -57,14 +57,14 @@ module LoadsConstant
       end.join('_')
     end
 
-    def full_nesting_constant_names
+    def full_nesting_constant_names # ordered from outermost to innermost
       nesting_constant_names.each_with_object([]) do |name, result|
         full_name = [result.last, name].compact.join('::')
         result.push full_name
       end
     end
 
-    def nesting_constant_names
+    def nesting_constant_names # ordered from outermost to innermost
       @name.split('::')[0..-2]
     end
   end
