@@ -22,7 +22,7 @@ However, there's a catch.
 
 By naming it `User::SendInvitation`, it's bound to `User`, even if it's a PORO that should be easily unit testable by stubbing `User`.
 
-I have seen many articles that suggest to do the following on top of your unit test:
+I have seen many articles that suggest to do the following at the top of your unit test:
 
 * define the `User` constant
 * require the file that defines `User::SendInvitation`.
@@ -30,6 +30,14 @@ I have seen many articles that suggest to do the following on top of your unit t
 This way you can have a lightning-fast unit test for `User::SendInvitation`.
 
 This works. Until this unit test needs to co-exist with other tests that actually load the real `User` class in the same Ruby instance. Then it flies into your face, because you have messed with the framework.
+
+## The goal
+
+I want to
+
+* use the nesting as described above
+* hit a keystroke in my editor and execute the single unit test, to see immediate feedback
+* execute the same test as part of the entire test suite (when other tests load Rails)
 
 ## The <s>solution</s>hack
 
