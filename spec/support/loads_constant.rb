@@ -6,8 +6,8 @@ module LoadsConstant
   end
 
   class Loader
-    def initialize(name, source, example)
-      @name, @source, @example = name, source, example
+    def initialize(name, source_location, example)
+      @name, @source_location, @example = name, source_location, example
     end
 
     def load
@@ -18,6 +18,7 @@ module LoadsConstant
 
     def stub_nesting
       full_nesting_constant_names.each do |constant_name|
+        next if constant_name == @name # don't stub innermost constant
         @example.stub_const constant_name, Module.new
       end
     end
@@ -29,7 +30,10 @@ module LoadsConstant
       # constants we stubbed, making the loaded constant unavailable for
       # the next example. The code defining it needs to be run again, and
       # require would not allow that.
-      Kernel.load relative_rails_root + @source + '/' + underscored_demodulized_name + '.rb'
+      source_path = relative_rails_root +
+        @source_location + '/' +
+        underscored_demodulized_name + '.rb'
+      Kernel.load source_path
       # @TODO assert constant now exists
     end
 
@@ -65,7 +69,7 @@ module LoadsConstant
     end
 
     def nesting_constant_names # ordered from outermost to innermost
-      @name.split('::')[0..-2]
+      @name.split('::')
     end
   end
 end
