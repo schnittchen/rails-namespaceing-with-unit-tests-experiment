@@ -14,6 +14,21 @@ module LoadsConstant
       return if autoloading_possible?
       stub_nesting
       load_source
+      assert_constant_exists
+    end
+
+    def assert_constant_exists
+      immediate_parent_name = full_nesting_constant_names[-2]
+
+      # This should not fail when !autoloading_possible?, since
+      # we have defined this constant ourselves.
+      # Otherwise, it helps separating problems in the file defining the needed
+      # constant itself and those defining parent constants.
+      eval immediate_parent_name
+
+      eval full_nesting_constant_names.last
+    rescue NameError => e
+      raise e, e.message + " (#{source_file} failed to define #{@name})"
     end
 
     def stub_nesting
@@ -30,11 +45,13 @@ module LoadsConstant
       # constants we stubbed, making the loaded constant unavailable for
       # the next example. The code defining it needs to be run again, and
       # require would not allow that.
-      source_path = relative_rails_root +
+      Kernel.load source_file
+    end
+
+    def source_file
+      relative_rails_root +
         @source_location + '/' +
         underscored_demodulized_name + '.rb'
-      Kernel.load source_path
-      # @TODO assert constant now exists
     end
 
     def relative_rails_root
