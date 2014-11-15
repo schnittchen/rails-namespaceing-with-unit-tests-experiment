@@ -1,3 +1,5 @@
+puts "#{__FILE__} loading"
+
 require 'rails_helper'
 
 describe User do
