@@ -11,9 +11,10 @@ module LoadsConstant
     end
 
     def load
-      return if autoloading_possible?
-      stub_nesting
-      load_source
+      unless autoloading_possible?
+        stub_nesting
+        load_source
+      end
       assert_constant_exists
     end
 
@@ -28,7 +29,13 @@ module LoadsConstant
 
       eval full_nesting_constant_names.last
     rescue NameError => e
-      raise e, e.message + " (#{source_file} failed to define #{@name})"
+      if e.message.include?('autoload')
+        # Rails provides a meaningful exception message
+        raise e
+      else
+        # roll our own
+        raise e, e.message + " (#{source_file} failed to define #{@name})"
+      end
     end
 
     def stub_nesting
